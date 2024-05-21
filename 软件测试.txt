@@ -1,0 +1,97 @@
+# 物品类
+class Item:
+    def __init__(self, name, category, length, width, height):
+        self.name = name
+        self.category = category
+        self.dimensions = (length, width, height)
+
+    def __repr__(self):
+        return f"{self.name} ({self.category}, Dimensions: {self.dimensions})"
+
+# 储物格类
+class Compartment:
+    def __init__(self, compartment_id, length, width, height):
+        self.compartment_id = compartment_id
+        self.dimensions = (length, width, height)
+        self.items = []
+
+    def add_item(self, item):
+        if self.fits(item):
+            self.items.append(item)
+            return True
+        return False
+
+    def contains(self, item):
+        return item in self.items
+
+    def remove_item(self, item):
+        if item in self.items:
+            self.items.remove(item)
+            return True
+        return False
+
+    def fits(self, item):
+        item_length, item_width, item_height = item.dimensions
+        length, width, height = self.dimensions
+        return item_length <= length and item_width <= width and item_height <= height
+
+# 衣柜类
+class Closet:
+    def __init__(self):
+        self.compartments = {}
+
+    def add_compartment(self, compartment_id, length, width, height):
+        self.compartments[compartment_id] = Compartment(compartment_id, length, width, height)
+
+    def store_item(self, compartment_id, item):
+        if compartment_id in self.compartments:
+            return self.compartments[compartment_id].add_item(item)
+        return False
+
+    def contains(self, compartment_id, item):
+        if compartment_id in self.compartments:
+            return self.compartments[compartment_id].contains(item)
+        return False
+
+    def clear(self):
+        for compartment in self.compartments.values():
+            compartment.items.clear()
+
+
+import unittest
+class TestClosetSystem(unittest.TestCase):
+    def setUp(self):
+        self.closet = Closet()
+        self.closet.add_compartment('1', 100, 50, 50)  # 储物格尺寸为100x50x50厘米
+
+        # 创建两件物品
+        self.jacket = Item("Jacket", "Clothing", 90, 40, 10)
+        self.large_suitcase = Item("Large Suitcase", "Luggage", 120, 60, 60)  # 大型行李箱，尺寸超标
+
+    def tearDown(self):
+        self.closet.clear()
+
+    def test_store_item_success(self):
+        result = self.closet.store_item('1', self.jacket)
+        self.assertTrue(result, "应能成功存放物品")
+        self.assertTrue(self.closet.contains('1', self.jacket), "衣柜应该包含夹克")
+
+        # 打印结果
+        if result:
+            print("测试成功：夹克成功存放于储物格 '1'。")
+        else:
+            print("测试失败：无法将夹克存放于储物格 '1'。")
+
+    def test_store_item_failure(self):
+        result = self.closet.store_item('1', self.large_suitcase)
+        self.assertFalse(result, "不应能存放超出尺寸的物品")
+        self.assertFalse(self.closet.contains('1', self.large_suitcase), "衣柜不应该包含大型行李箱")
+
+        # 打印结果
+        if not result:
+            print("测试成功：大型行李箱由于超出尺寸未能存放于储物格 '1'。")
+        else:
+            print("测试失败：大型行李箱错误地存放于储物格 '1'。")
+
+if __name__ == '__main__':
+    unittest.main(argv=['first-arg-is-ignored'], exit=False)
