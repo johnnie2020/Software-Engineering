@@ -19,7 +19,9 @@ class Compartment:
         if self.fits(item):
             self.items.append(item)
             return True
-        return False
+        else:
+            # 如果不符合条件，返回一个包含错误信息的元组
+            return False, f"Item dimensions {item.dimensions} exceed compartment dimensions {self.dimensions}"
 
     def contains(self, item):
         return item in self.items
