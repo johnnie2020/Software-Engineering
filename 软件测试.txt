@@ -94,6 +94,6 @@ class TestClosetSystem(unittest.TestCase):
             print("测试成功：大型行李箱由于超出尺寸未能存放于储物格 '1'。")
         else:
             print("测试失败：大型行李箱错误地存放于储物格 '1'。")
-
+# 主函数运行
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
